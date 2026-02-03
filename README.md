@@ -9,7 +9,7 @@ Este documento descreve **toda a implementação** do desafio proposto, incluind
 
 ## 1. Visão Geral da Arquitetura
 
-A solução utiliza **Google Cloud Platform (GCP)** como provedor de nuvem pública, com provisionamento automatizado via **Terraform** e configuração via **Ansible**. A aplicação fornecida será executada em um **cluster Docker Swarm com 3 nós**.
+A solução utiliza **AWS** como provedor de nuvem pública, com provisionamento automatizado via **Terraform** e configuração via **Ansible**. A aplicação fornecida será executada em um **cluster Docker Swarm com 3 nós**.
 
 Ferramentas utilizadas:
 
@@ -62,7 +62,7 @@ fast-engenharia-plataforma/
 
 ---
 
-## 4. Terraform – Infraestrutura no GCP
+## 4. Terraform – Infraestrutura no AWS
 
 ### provider.tf
 
