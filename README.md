@@ -362,9 +362,3 @@ http://IP_MANAGER:3001
 Bootcamp FAST 2025 – Engenharia de Plataforma
 
 ```
-
----
-
-Este README atende aos requisitos de **documentação técnica em Markdown**, conforme exigido em vagas de DevOps / Plataforma.
-
-```
