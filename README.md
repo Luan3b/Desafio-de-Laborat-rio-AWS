@@ -1,5 +1,4 @@
-# Desafio-de-Laborat-rio-Engenharia de Plataforma
-
+# FAST 2025 – Bootcamp Engenharia de Plataforma
 
 ## Desafio de Laboratório – Implementação Completa
 
@@ -9,11 +8,11 @@ Este documento descreve **toda a implementação** do desafio proposto, incluind
 
 ## 1. Visão Geral da Arquitetura
 
-A solução utiliza **AWS** como provedor de nuvem pública, com provisionamento automatizado via **Terraform** e configuração via **Ansible**. A aplicação fornecida será executada em um **cluster Docker Swarm com 3 nós**.
+A solução utiliza **Amazon Web Services (AWS) como provedor de nuvem pública, com provisionamento automatizado via **Terraform** e configuração via **Ansible**. A aplicação fornecida será executada em um **cluster Docker Swarm com 3 nós**.
 
 Ferramentas utilizadas:
 
-* Terraform (Infraestrutura)
+* Terraform (Infraestrutura – AWS)
 * Ansible (Configuração)
 * Docker Swarm (Orquestração)
 * GitHub Actions (CI/CD)
@@ -62,43 +61,40 @@ fast-engenharia-plataforma/
 
 ---
 
-## 4. Terraform – Infraestrutura no AWS
+## 4. Terraform – Infraestrutura na AWS
+
+A infraestrutura é provisionada na **AWS**, utilizando **EC2**, **Security Groups** e **VPC padrão**.
 
 ### provider.tf
 
 ```hcl
-provider "google" {
-  project = var.project_id
-  region  = var.region
+provider "aws" {
+  region = var.aws_region
 }
 ```
 
 ### variables.tf
 
 ```hcl
-variable "project_id" {}
-variable "region" { default = "us-central1" }
-variable "zone" { default = "us-central1-a" }
+variable "aws_region" {
+  default = "us-east-1"
+}
+
+variable "instance_type" {
+  default = "t3.medium"
+}
 ```
 
 ### main.tf
 
 ```hcl
-resource "google_compute_instance" "swarm" {
-  count        = 3
-  name         = "swarm-node-${count.index}"
-  machine_type = "e2-medium"
-  zone         = var.zone
+resource "aws_instance" "swarm" {
+  count         = 3
+  ami           = "ami-0c02fb55956c7d316" # Ubuntu 22.04 LTS
+  instance_type = var.instance_type
 
-  boot_disk {
-    initialize_params {
-      image = "ubuntu-os-cloud/ubuntu-2204-lts"
-    }
-  }
-
-  network_interface {
-    network = "default"
-    access_config {}
+  tags = {
+    Name = "swarm-node-${count.index}"
   }
 }
 ```
@@ -227,3 +223,148 @@ A solução está pronta para avaliação técnica e defesa.
 
 **Autor:** Luan Borba
 **Curso:** FAST 2025 – Engenharia de Plataforma
+
+---
+
+## 11. README.md (Documentação em Markdown)
+
+Abaixo está o **README.md pronto**, seguindo boas práticas exigidas em vagas de DevOps / Engenharia de Plataforma.
+
+```markdown
+# FAST 2025 – Laboratório de Engenharia de Plataforma
+
+Este projeto demonstra a implementação de uma infraestrutura moderna em nuvem utilizando **Infraestrutura como Código (IaC)**, **CI/CD**, **Docker Swarm** e **Monitoramento**, como parte do Bootcamp **FAST 2025 – Engenharia de Plataforma**.
+
+## 📌 Objetivo do Projeto
+
+Provisionar e operar uma aplicação containerizada em um **cluster Docker Swarm com 3 nós**, totalmente automatizado, utilizando:
+
+- Terraform para provisionamento da infraestrutura
+- Ansible para configuração dos servidores
+- GitHub Actions para CI/CD
+- Uptime Kuma para monitoramento e alertas
+
+## 🏗️ Arquitetura
+
+- Amazon Web Services (AWS)
+- 1 instância EC2 Manager (Docker Swarm)
+- 2 instâncias EC2 Worker (Docker Swarm)
+- Security Groups controlando acesso
+- Rede isolada para aplicação
+- Monitoramento separado da aplicação
+
+## 📁 Estrutura do Projeto
+
+```
+
+fast-engenharia-plataforma/
+├── terraform/        # Infraestrutura como código (AWS)
+├── ansible/          # Configuração automática dos servidores
+├── app/              # Aplicação containerizada
+├── docker-stack.yml  # Stack Docker Swarm
+├── .github/workflows # Pipeline CI/CD
+└── README.md
+
+````
+
+## ⚙️ Pré-requisitos
+
+- Conta no Amazon Web Services
+- Terraform >= 1.5
+- Ansible >= 2.10
+- Docker e Docker Compose
+- Conta no Docker Hub
+- Git
+
+## 🚀 Como Provisionar a Infraestrutura
+
+```bash
+cd terraform
+terraform init
+terraform apply
+````
+
+Após a criação das VMs, anote os IPs públicos gerados.
+
+## 🔧 Configuração dos Servidores
+
+Edite o arquivo `ansible/inventory.ini` com os IPs das VMs:
+
+```ini
+[manager]
+IP_MANAGER
+
+[workers]
+IP_WORKER_1
+IP_WORKER_2
+```
+
+Execute o Ansible:
+
+```bash
+cd ansible
+ansible-playbook playbook.yml
+```
+
+## 🐳 Deploy da Aplicação
+
+O deploy é feito automaticamente no Docker Swarm utilizando o arquivo `docker-stack.yml`.
+
+```bash
+docker stack deploy -c docker-stack.yml app
+```
+
+A aplicação ficará disponível em:
+
+```
+http://IP_MANAGER:3000
+```
+
+## 🔁 CI/CD
+
+O pipeline é executado automaticamente via **GitHub Actions**:
+
+* Build da imagem Docker
+* Push para o Docker Hub
+* Atualização da aplicação no cluster
+
+Arquivo: `.github/workflows/ci-cd.yml`
+
+## 📊 Monitoramento
+
+O Uptime Kuma monitora a disponibilidade da aplicação:
+
+```
+http://IP_MANAGER:3001
+```
+
+* Checagem HTTP
+* Alertas via webhook (Slack / Discord / Telegram)
+
+## 🔐 Segurança
+
+* Aplicação e monitoramento em redes separadas
+* Sem acesso direto entre serviços críticos
+* Infraestrutura reproduzível e versionada
+
+## 📚 Tecnologias Utilizadas
+
+* Terraform
+* Ansible
+* Docker Swarm
+* GitHub Actions
+* Amazon Web Services
+* Uptime Kuma
+
+## 👨‍💻 Autor
+
+**Luan Borba**
+Bootcamp FAST 2025 – Engenharia de Plataforma
+
+```
+
+---
+
+Este README atende aos requisitos de **documentação técnica em Markdown**, conforme exigido em vagas de DevOps / Plataforma.
+
+```
